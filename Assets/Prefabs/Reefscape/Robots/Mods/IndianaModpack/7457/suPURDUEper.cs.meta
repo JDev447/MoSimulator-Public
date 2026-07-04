@@ -1,0 +1,33 @@
+fileFormatVersion: 2
+guid: 3dc3fd1561fe8dd40a58076c96514963
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - blueBumperMaterial: {fileID: 2100000, guid: 339858c0f551322428e19e88715e1fb1,
+      type: 2}
+  - redBumperMaterial: {fileID: 2100000, guid: 8891c8be8334c264dbe596d910db7283, type: 2}
+  - elevator: {instanceID: 0}
+  - intake: {instanceID: 0}
+  - endEffector: {instanceID: 0}
+  - climber: {instanceID: 0}
+  - stow: {fileID: 11400000, guid: f66b056056f6b624dbfc3a9a0c949e64, type: 2}
+  - intakePos: {instanceID: 0}
+  - l1: {fileID: 11400000, guid: 82c41837f03842748976023bafeb6cbf, type: 2}
+  - l2: {fileID: 11400000, guid: 211672f5706edb743bfe311b48a253d2, type: 2}
+  - l3: {fileID: 11400000, guid: 30a8769127690674cbad230fd5bf221e, type: 2}
+  - l4: {fileID: 11400000, guid: 7a3803215d5c4be419e95234dfe2b3a8, type: 2}
+  - l4Score: {instanceID: 0}
+  - lowAlgae: {instanceID: 0}
+  - highAlgae: {fileID: 11400000, guid: bc2156ff9a626a14f80451f29b105303, type: 2}
+  - barge: {fileID: 11400000, guid: d72dc2a48f030bc4ebc517986070cf63, type: 2}
+  - climbDeployed: {fileID: 11400000, guid: 2b9e2e5dd147b014fbeddac6e41192f6, type: 2}
+  - climbed: {fileID: 11400000, guid: 65d71030fafeec54a889513a299e2714, type: 2}
+  - stationCoralIntake: {instanceID: 0}
+  - endEffectorHolder: {instanceID: 0}
+  - algaeIntake: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
