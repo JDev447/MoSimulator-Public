@@ -56,5 +56,6 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "MoSimulator-Public.sln"
+    "dotnet.defaultSolution": "MoSimulator-Public.sln",
+    "dotnet.preferCSharpExtension": true
 }
