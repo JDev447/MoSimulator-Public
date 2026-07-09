@@ -798,6 +798,7 @@ GameObject:
   - component: {fileID: 406453861823373569}
   - component: {fileID: 1749974136719600336}
   - component: {fileID: 7860458636524382727}
+  - component: {fileID: 4292823380792082123}
   m_Layer: 6
   m_Name: SDS Elevator Block.004
   m_TagString: Untagged
@@ -875,6 +876,27 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &4292823380792082123
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 186923940400704333}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.0008285757, y: 0.00025399379, z: 0.00042737412}
+  m_Center: {x: 1.1641532e-10, y: -0.0001269826, z: -0.00008666566}
 --- !u!1 &196434483178125970
 GameObject:
   m_ObjectHideFlags: 0
@@ -7792,6 +7814,7 @@ GameObject:
   - component: {fileID: 6406847718135249618}
   - component: {fileID: 5814539143049814297}
   - component: {fileID: 1824571121012433446}
+  - component: {fileID: 3592736494917988904}
   m_Layer: 6
   m_Name: SDS Elevator Block.006
   m_TagString: Untagged
@@ -7869,6 +7892,27 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &3592736494917988904
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1533142304961658460}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.0008285757, y: 0.00025399379, z: 0.00042737412}
+  m_Center: {x: -2.3283064e-10, y: -0.00012698237, z: -0.00008666543}
 --- !u!1 &1533358982618165817
 GameObject:
   m_ObjectHideFlags: 0
@@ -10325,6 +10369,7 @@ Transform:
   - {fileID: 2306561542270165394}
   - {fileID: 8487692805026658715}
   - {fileID: 8076180293915743488}
+  - {fileID: 5771887108297515193}
   m_Father: {fileID: 7508108429782771140}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2017440401012043708
@@ -13159,7 +13204,7 @@ MonoBehaviour:
     Max: 4
     Isaturation: 0
   endEffectorPid:
-    kP: 10
+    kP: 2.5
     kI: 0
     kD: 5
     Max: 2.25
@@ -13185,7 +13230,7 @@ MonoBehaviour:
   - {fileID: 7980492783756365815}
   - {fileID: 5397167274551445987}
   algaeRollers:
-  - {fileID: 28524082163925381}
+  - {fileID: 0}
   floorIntakeSpeed: 800
   eeOuttakeSpeed: 1000
   climberSpeed: 4000
@@ -16198,6 +16243,7 @@ GameObject:
   - component: {fileID: 6420760340253232652}
   - component: {fileID: 6282305438876375453}
   - component: {fileID: 7401912978204482946}
+  - component: {fileID: 8084466393566962676}
   m_Layer: 6
   m_Name: SDS Elevator Block.002
   m_TagString: Untagged
@@ -16275,6 +16321,27 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &8084466393566962676
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3054095542112795661}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.0008285757, y: 0.00025399379, z: 0.00042737412}
+  m_Center: {x: -4.656613e-10, y: -0.00012698249, z: -0.00008666531}
 --- !u!1 &3064974740671218196
 GameObject:
   m_ObjectHideFlags: 0
@@ -23445,7 +23512,7 @@ Rigidbody:
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
   m_IncludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 1
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 64
@@ -26483,7 +26550,7 @@ GameObject:
   - component: {fileID: 8476538784869137014}
   - component: {fileID: 6652863566199425566}
   - component: {fileID: 4569163730658847590}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Part 34.002
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -26503,7 +26570,7 @@ Transform:
   m_LocalScale: {x: 100, y: 99.999985, z: 100.000015}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 4970764094841081977}
+  m_Father: {fileID: 5635450277169279610}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &8476538784869137014
 MeshFilter:
@@ -26567,7 +26634,7 @@ BoxCollider:
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 64
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -26781,7 +26848,7 @@ GameObject:
   - component: {fileID: 6895107158961368593}
   - component: {fileID: 6504047034559849133}
   - component: {fileID: 3494098778407384444}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: 25-ELEV-P005
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -29601,7 +29668,7 @@ Rigidbody:
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
   m_IncludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 1
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 64
@@ -36558,7 +36625,7 @@ GameObject:
   - component: {fileID: 3555489630082833793}
   - component: {fileID: 7106048418830132298}
   - component: {fileID: 2848899126967563035}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: 25-ELEV-P008
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -38018,7 +38085,6 @@ Transform:
   - {fileID: 8461996914823878675}
   - {fileID: 7137503900143219581}
   - {fileID: 6215669569202718521}
-  - {fileID: 5771887108297515193}
   - {fileID: 6848127280032777582}
   - {fileID: 70639188761061532}
   - {fileID: 5753314179698453036}
@@ -38508,7 +38574,7 @@ GameObject:
   - component: {fileID: 789439292519579783}
   - component: {fileID: 3931494663699470415}
   - component: {fileID: 6457083142953526521}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Part 34.001
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -38592,7 +38658,7 @@ BoxCollider:
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 64
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -40100,10 +40166,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1749187784970659051}
-  - component: {fileID: 3566599176786710143}
-  - component: {fileID: 4791777883172084703}
-  - component: {fileID: 28524082163925381}
-  - component: {fileID: 8275731710116174430}
   m_Layer: 6
   m_Name: AlgaeRoller
   m_TagString: Untagged
@@ -40128,107 +40190,6 @@ Transform:
   - {fileID: 5977064820953928968}
   m_Father: {fileID: 2701372970724634626}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!54 &3566599176786710143
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8175149803468215357}
-  serializedVersion: 4
-  m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
-  m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
-  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ImplicitCom: 1
-  m_ImplicitTensor: 1
-  m_UseGravity: 1
-  m_IsKinematic: 0
-  m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 0
---- !u!59 &4791777883172084703
-HingeJoint:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8175149803468215357}
-  serializedVersion: 3
-  m_ConnectedBody: {fileID: 4415878329697297414}
-  m_ConnectedArticulationBody: {fileID: 0}
-  m_Anchor: {x: -0.0040830076, y: 0, z: 0}
-  m_Axis: {x: 1, y: 0, z: 0}
-  m_AutoConfigureConnectedAnchor: 1
-  m_ConnectedAnchor: {x: 0, y: 0, z: 0}
-  m_UseSpring: 0
-  m_Spring:
-    spring: 0
-    damper: 0
-    targetPosition: 0
-  m_UseMotor: 0
-  m_Motor:
-    targetVelocity: 1000
-    force: 1000
-    freeSpin: 0
-  m_UseLimits: 0
-  m_ExtendedLimits: 0
-  m_UseAcceleration: 0
-  m_Limits:
-    min: 0
-    max: 0
-    bounciness: 0
-    bounceMinVelocity: 0.2
-    contactDistance: 0
-  m_BreakForce: Infinity
-  m_BreakTorque: Infinity
-  m_EnableCollision: 0
-  m_EnablePreprocessing: 1
-  m_MassScale: 1
-  m_ConnectedMassScale: 1
---- !u!114 &28524082163925381
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8175149803468215357}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c70544bdb8675d748968fd7092a43259, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!136 &8275731710116174430
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8175149803468215357}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 64
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.000001
-  m_Height: 0.003875047
-  m_Direction: 0
-  m_Center: {x: -0.097458586, y: 0, z: 0}
 --- !u!1 &8186865867764662691
 GameObject:
   m_ObjectHideFlags: 0
@@ -43394,6 +43355,7 @@ GameObject:
   - component: {fileID: 7364832069499110902}
   - component: {fileID: 110910366396665607}
   - component: {fileID: 6012930828592386743}
+  - component: {fileID: 4786291923536094554}
   m_Layer: 6
   m_Name: SDS Elevator Block.001
   m_TagString: Untagged
@@ -43471,6 +43433,27 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &4786291923536094554
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9129784530942007343}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.0008285757, y: 0.00025399379, z: 0.00042737412}
+  m_Center: {x: 4.656613e-10, y: -0.00012698342, z: -0.00008666636}
 --- !u!1 &9141289634915522872
 GameObject:
   m_ObjectHideFlags: 0

@@ -39090,7 +39090,8 @@ GameObject:
   - component: {fileID: 1999893388421446076}
   - component: {fileID: 5294976671294089956}
   - component: {fileID: 1519129780731558768}
-  m_Layer: 6
+  - component: {fileID: 5847344377280044506}
+  m_Layer: 0
   m_Name: 2" x 1" x 0.0625" Aluminum Tube Stock 2" Pattern (47") (WCP-0895).002
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -39164,6 +39165,27 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &5847344377280044506
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7715942468128069973}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.0010159998, y: 0.000508, z: 0.000254}
+  m_Center: {x: -0.005461001, y: -4.8534847e-18, z: 1.1493923e-15}
 --- !u!1 &7736628121988959150
 GameObject:
   m_ObjectHideFlags: 0
