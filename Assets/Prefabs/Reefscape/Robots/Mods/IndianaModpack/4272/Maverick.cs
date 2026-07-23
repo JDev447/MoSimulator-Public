@@ -1,3 +1,5 @@
+using System;
+using System.Reflection; // Required for bypassing private variables
 using Games.Reefscape.Enums;
 using Games.Reefscape.GamePieceSystem;
 using Games.Reefscape.Robots;
@@ -19,6 +21,9 @@ namespace Prefabs.Reefscape.Robots.Mods.IndianaModpack._4272
         [SerializeField] private GenericElevator elevator;
         [SerializeField] private GenericJoint endEffector;
         [SerializeField] private GenericJoint climber;
+        
+        [Tooltip("Drag the GenericJoint components that make up the physical elevator stages here.")]
+        [SerializeField] private GenericJoint[] elevatorStages;
         
         [Header("PIDS")]
         [SerializeField] private PidConstants endEffectorPid;
@@ -101,6 +106,9 @@ namespace Prefabs.Reefscape.Robots.Mods.IndianaModpack._4272
         private float _lockedSafeHeight = 0f;
         private bool _isBargeSwing = false;
         private bool _isL4Swing = false;
+
+        // Reflection variable to store the private field
+        private FieldInfo _ignoreDisabledField;
         
         protected override void Start()
         {
@@ -127,6 +135,14 @@ namespace Prefabs.Reefscape.Robots.Mods.IndianaModpack._4272
             if (eeRollerAudioSource != null && eeRollerClip != null) { eeRollerAudioSource.clip = eeRollerClip; eeRollerAudioSource.loop = true; }
             if (eePivotAudioSource != null && eePivotClip != null) { eePivotAudioSource.clip = eePivotClip; eePivotAudioSource.loop = true; }
             if (climberAudioSource != null && climberClip != null) { climberAudioSource.clip = climberClip; climberAudioSource.loop = true; }
+
+            // --- REFLECTION SETUP ---
+            // This searches the MoSim library to find the hidden checkbox so we can control it via code
+            _ignoreDisabledField = typeof(GenericJoint).GetField("ignoreDisabledMode", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public);
+            if (_ignoreDisabledField == null)
+            {
+                _ignoreDisabledField = typeof(GenericJoint).GetField("IgnoreDisabledMode", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public);
+            }
         }
 
         private void LateUpdate()
@@ -174,6 +190,23 @@ namespace Prefabs.Reefscape.Robots.Mods.IndianaModpack._4272
 
             // Read physical joint states
             float currentElevatorHeight = elevator.GetElevatorHeight();
+            
+            // --- DYNAMIC ELEVATOR SINK FIX ---
+            bool isDisabled = BaseGameManager.Instance.RobotState == RobotState.Disabled;
+            bool isRestingAtBottom = currentElevatorHeight <= 0.5f;
+
+            if (_ignoreDisabledField != null && elevatorStages != null)
+            {
+                foreach (var stage in elevatorStages)
+                {
+                    if (stage != null)
+                    {
+                        // Use the master key to check the box
+                        _ignoreDisabledField.SetValue(stage, (isDisabled && isRestingAtBottom));
+                    }
+                }
+            }
+            
             float currentEEAngle = endEffector.GetSingleAxisAngle(JointAxis.Z);
             float distanceToStow = Mathf.Abs(Mathf.DeltaAngle(currentEEAngle, stow.endEffectorAngle));
             bool isArmOut = distanceToStow > angleTolerance;

@@ -57,6 +57,10 @@ namespace Prefabs.Reefscape.Robots.Mods.IndianaModpack._7457
         [Tooltip("The Trigger Script on the front of the robot (Set to 'Algae' mode)")]
         [SerializeField] private suPURDUEperClimberTrigger algaeSensor;
 
+        [Header("Movement Settings")]
+        [Tooltip("The elevator height (in inches) required before the end effector is allowed to rotate out of stow when going to L4 or Barge.")]
+        [SerializeField] private float safeClearanceHeight = 10f;
+
         [Header("Robot Setpoints")]
         [SerializeField] private suPURDUEperSetpoint stow;
         [SerializeField] private suPURDUEperSetpoint intakePos;
@@ -391,10 +395,28 @@ namespace Prefabs.Reefscape.Robots.Mods.IndianaModpack._7457
         private void SetRobotTargets(suPURDUEperSetpoint setpoint)
         {
             if (setpoint == null) { elevator.SetTarget(0); return; }
+            
             elevator.SetTarget(setpoint.elevatorHeight);
             intake.SetTargetAngle(setpoint.intakeAngle).withAxis(JointAxis.X).flipDirection();
-            endEffector.SetTargetAngle(setpoint.endEffectorAngle).withAxis(JointAxis.X).flipDirection();
             climber.SetTargetAngle(setpoint.climberAngle).withAxis(JointAxis.Z).flipDirection();
+
+            // --- END EFFECTOR HEIGHT WAIT LOGIC ---
+            float currentElevatorHeight = elevator != null ? elevator.GetElevatorHeight() : 0f;
+            float targetEEAngle = setpoint.endEffectorAngle;
+
+            // Only apply the clearance wait when lifting for high-scoring setpoints (L4 or Barge)
+            bool isHighScoring = (CurrentSetpoint == ReefscapeSetpoints.L4 || 
+                                  CurrentSetpoint == ReefscapeSetpoints.Barge || 
+                                  setpoint == l4 || 
+                                  setpoint == barge || 
+                                  setpoint == l4Score);
+
+            if (isHighScoring && setpoint.elevatorHeight >= safeClearanceHeight && currentElevatorHeight < safeClearanceHeight)
+            {
+                targetEEAngle = stow != null ? stow.endEffectorAngle : 0f;
+            }
+
+            endEffector.SetTargetAngle(targetEEAngle).withAxis(JointAxis.X).flipDirection();
         }
 
         private void PlacePiece()

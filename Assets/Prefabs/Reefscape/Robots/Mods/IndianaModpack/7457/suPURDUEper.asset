@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   teamNumber: 7457
   teamName: suPURDUEper Robotics
-  robotPrefab: {fileID: 2534371394911199621, guid: efdb49b648611426cb860e223fe5a453,
+  robotPrefab: {fileID: 2534371394911199621, guid: d8637f6e2f7510642b685a1a1e64c06f,
     type: 3}
   robotPreloadGamePiece: {fileID: 2185987706872048638, guid: 970bdf84a203d9a4b8dc602974341a07,
     type: 3}
