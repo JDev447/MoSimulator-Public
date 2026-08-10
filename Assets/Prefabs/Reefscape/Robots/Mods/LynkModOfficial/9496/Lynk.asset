@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   teamNumber: 9496
   teamName: Lynk
-  robotPrefab: {fileID: 2534371394911199621, guid: 30888f11f705eb147815a92a19def5d4,
+  robotPrefab: {fileID: 2534371394911199621, guid: 670ce75ebc1c68a42becc859352f7ef9,
     type: 3}
   robotPreloadGamePiece: {fileID: 2185987706872048638, guid: 970bdf84a203d9a4b8dc602974341a07,
     type: 3}
@@ -29,6 +29,5 @@ MonoBehaviour:
   - {fileID: 6829736770845459078, guid: 6d88ef0a051098f4c9f966c7bf817596, type: 3}
   - {fileID: 6829736770845459078, guid: 9d404ab9e4d805b40bc1177cab1a1dab, type: 3}
   alternateTutorialCards: []
-  addressableKey: 
   autoClimbs: 0
   alternateAutoClimbs: 0

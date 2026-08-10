@@ -27,6 +27,7 @@ MonoBehaviour:
   tutorialCards:
   - {fileID: 6829736770845459078, guid: e144a9975f639bb48aec0e9b3c242746, type: 3}
   - {fileID: 6829736770845459078, guid: ea285c1520ade9e4dbf44494f5151d9b, type: 3}
+  - {fileID: 6829736770845459078, guid: 584d5d8d8d4afbe40aed870c220057d1, type: 3}
   alternateTutorialCards: []
   autoClimbs: 0
   alternateAutoClimbs: 0

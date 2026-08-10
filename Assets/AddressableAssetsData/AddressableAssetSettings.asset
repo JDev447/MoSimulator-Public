@@ -15,7 +15,7 @@ MonoBehaviour:
   m_DefaultGroup: 9162ef73a8b7ff14a81079bd59987bc0
   m_currentHash:
     serializedVersion: 2
-    Hash: 78d414bc802d0bd74944fffbc685332d
+    Hash: 50a0539798a81e50859dc2cf084852f0
   m_OptimizeCatalogSize: 0
   m_BuildRemoteCatalog: 0
   m_BundleLocalCatalog: 0
@@ -62,6 +62,7 @@ MonoBehaviour:
   m_overridePlayerVersion: '[UnityEditor.PlayerSettings.bundleVersion]'
   m_GroupAssets:
   - {fileID: 11400000, guid: e02197fdf4254934fa6b0ab1762bb000, type: 2}
+  - {fileID: 11400000, guid: c0dcc5b1fc3bbf24aad963dbb8ad4447, type: 2}
   - {fileID: 11400000, guid: 9cd31e1fc2fdeb84fbde0fabd689577f, type: 2}
   - {fileID: 11400000, guid: f5b71b85a798d6f40bb1c3812901e71f, type: 2}
   - {fileID: 11400000, guid: aac5dc43f207f464cbe5c74a47d73199, type: 2}
@@ -78,6 +79,8 @@ MonoBehaviour:
         m_Value: 'http://[PrivateIpAddress]:[HostingServicePort]'
       - m_Id: 09b0b24e528b599428cd44c5db541c03
         m_Value: '[UnityEditor.EditorUserBuildSettings.activeBuildTarget]'
+      - m_Id: 2971da7646f04c144a4d7a5a743809e7
+        m_Value: '{UnityEngine.Application.persistentDataPath}/Mods/IndianaModpack'
       - m_Id: 37e529e86860a7741a1cf0fcf45e094b
         m_Value: '[UnityEngine.AddressableAssets.Addressables.BuildPath]/[BuildTarget]'
       - m_Id: 3995af1f76783674a86b8f7323c5f71e
@@ -88,6 +91,8 @@ MonoBehaviour:
         m_Value: '{UnityEngine.AddressableAssets.Addressables.RuntimePath}/[BuildTarget]'
       - m_Id: a2842c0f9ded8a54d9ba8ec693eb3bcc
         m_Value: '{UnityEngine.Application.dataPath}/../Mods/Packed Assets'
+      - m_Id: c4a21e3e4c73dec44b32eada496970ca
+        m_Value: '{UnityEngine.Application.dataPath}/../Mods/IndianaModpack'
       - m_Id: c65595e78f4c7db44a4324f2e84106be
         m_Value: '{UnityEngine.Application.persistentDataPath}/Mods/MechTechMod'
       - m_Id: dc362afee9112ee489246a2a832e6005
@@ -98,6 +103,9 @@ MonoBehaviour:
       m_InlineUsage: 0
     - m_Id: 09b0b24e528b599428cd44c5db541c03
       m_Name: BuildTarget
+      m_InlineUsage: 0
+    - m_Id: 2971da7646f04c144a4d7a5a743809e7
+      m_Name: IndianaModpack_LoadPath
       m_InlineUsage: 0
     - m_Id: 37e529e86860a7741a1cf0fcf45e094b
       m_Name: Local.BuildPath
@@ -113,6 +121,9 @@ MonoBehaviour:
       m_InlineUsage: 0
     - m_Id: a2842c0f9ded8a54d9ba8ec693eb3bcc
       m_Name: Packed Assets_BuildPath
+      m_InlineUsage: 0
+    - m_Id: c4a21e3e4c73dec44b32eada496970ca
+      m_Name: IndianaModpack_BuildPath
       m_InlineUsage: 0
     - m_Id: c65595e78f4c7db44a4324f2e84106be
       m_Name: MechTechMod_LoadPath

@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c104705ba45043c4eb2aa445fcb9f354, type: 3}
   m_Name: Ground Algae
   m_EditorClassIdentifier: 
-  elevatorHeight: 2
+  elevatorHeight: 5
   endEffectorAngle: -40
-  algaeManipulatorAngle: 42
+  algaeManipulatorAngle: 50
   climberAngle: 0
-  funnelAngle: -45
+  funnelAngle: -49

@@ -31,12 +31,15 @@ namespace Prefabs.Reefscape.Robots.Mods.IndianaModpack._7457
         
         [Header("Active Rollers")]
         [SerializeField] private GenericRoller[] intakeRollers;
+        [SerializeField] private GenericRoller[] l1IntakeRollers;
         [SerializeField] private GenericRoller[] climberRollers;
         [SerializeField] private GenericRoller[] endEffectorRollers;
         [SerializeField] private GenericRoller[] algaeRollers;
 
         [Header("Roller Speeds")]
         [SerializeField] private float floorIntakeSpeed = 800f;
+        [SerializeField] private float l1IntakeSpeed = 800f;
+        [SerializeField] private float l1OuttakeSpeed = -1000f;
         [SerializeField] private float eeOuttakeSpeed = 1000f;
         [SerializeField] private float climberSpeed = 3000f;
         
@@ -49,7 +52,7 @@ namespace Prefabs.Reefscape.Robots.Mods.IndianaModpack._7457
         [SerializeField] private AudioSource intakeAudio;
         [SerializeField] private AudioClip intakeClip;
         [SerializeField] private AudioSource algaeStallAudio; 
-        [SerializeField] private AudioClip algaeStallClip;
+        [SerializeField] private AudioClip algaeStallClip;    // 1986Stall
         [SerializeField] private AudioSource climberAudio; 
         [SerializeField] private AudioClip climberClip;
 
@@ -104,6 +107,10 @@ namespace Prefabs.Reefscape.Robots.Mods.IndianaModpack._7457
 
         private RobotGamePieceController<ReefscapeGamePiece, ReefscapeGamePieceData>.GamePieceControllerNode _coralController;
         private RobotGamePieceController<ReefscapeGamePiece, ReefscapeGamePieceData>.GamePieceControllerNode _algaeController; 
+
+        // --- TARGET TRACKING ---
+        private float _elevatorTargetHeight;
+        private float _endEffectorTargetAngle;
 
         protected override void Start()
         {
@@ -178,15 +185,58 @@ namespace Prefabs.Reefscape.Robots.Mods.IndianaModpack._7457
                 SetRobotMode(ReefscapeRobotMode.Coral);
             }
 
-            UpdateAudio(intakePressed, hasCoral, hasAlgae);
+            // --- STATE HELPERS FOR ROLLER & AUDIO LOGIC ---
+            bool isL1Mode = (CurrentIntakeMode == ReefscapeIntakeMode.L1);
+            bool isScoringAlgae = outtakePressed && (_algaeMode || CurrentSetpoint == ReefscapeSetpoints.Barge || LastSetpoint == ReefscapeSetpoints.Barge || CurrentRobotMode == ReefscapeRobotMode.Algae);
+            
+            bool isAlgaeReefSetpoint = (CurrentSetpoint == ReefscapeSetpoints.L2 || 
+                                        CurrentSetpoint == ReefscapeSetpoints.L3 || 
+                                        CurrentSetpoint == ReefscapeSetpoints.LowAlgae || 
+                                        CurrentSetpoint == ReefscapeSetpoints.HighAlgae);
 
-            // Floor Intake Generic Rollers
-            float currentIntakeSpeed = (intakePressed && !hasCoral) ? floorIntakeSpeed : 0f;
+            // --- FLOOR & L1 ROLLER LOGIC ---
+            float currentIntakeSpeed = 0f;
+            float currentL1Speed = 0f;
+
+            if (isL1Mode)
+            {
+                if (intakePressed && !hasCoral)
+                {
+                    currentL1Speed = l1IntakeSpeed;
+                    currentIntakeSpeed = -floorIntakeSpeed; // Reverse regular floor intake
+                }
+                else if (outtakePressed)
+                {
+                    currentL1Speed = l1OuttakeSpeed;
+                    currentIntakeSpeed = floorIntakeSpeed; // Spin regular floor intake normally
+                }
+            }
+            else
+            {
+                // Lock regular floor intake: only runs when intaking coral from the floor!
+                bool runFloorIntake = intakePressed && !hasCoral && !isAlgaeReefSetpoint && CurrentRobotMode != ReefscapeRobotMode.Algae;
+                if (runFloorIntake) 
+                {
+                    currentIntakeSpeed = floorIntakeSpeed;
+                    currentL1Speed = -l1IntakeSpeed; // Reverse L1 rollers when intaking normally
+                }
+            }
+
+            // Apply to Floor Intake Generic Rollers
             if (intakeRollers != null)
             {
                 foreach(var roller in intakeRollers) 
                 { 
                     if(roller != null) roller.ChangeAngularVelocity(currentIntakeSpeed); 
+                }
+            }
+
+            // Apply to L1 Generic Rollers
+            if (l1IntakeRollers != null)
+            {
+                foreach (var roller in l1IntakeRollers)
+                {
+                    if (roller != null) roller.ChangeAngularVelocity(currentL1Speed);
                 }
             }
 
@@ -200,14 +250,18 @@ namespace Prefabs.Reefscape.Robots.Mods.IndianaModpack._7457
                 }
             }
 
-            // Algae Generic Rollers (Animation / Visual Logic)
+            // --- ALGAE ROLLER LOGIC ---
             float currentAlgaeSpeed = algaeIdleSpeed;
 
-            if (outtakePressed)
+            if (isScoringAlgae)
             {
                 currentAlgaeSpeed = algaeScoreSpeed;
             }
-            else if (CurrentSetpoint == ReefscapeSetpoints.L2 || CurrentSetpoint == ReefscapeSetpoints.L3 || (intakePressed && !hasAlgae))
+            else if (hasAlgae || CurrentSetpoint == ReefscapeSetpoints.Climb || CurrentSetpoint == ReefscapeSetpoints.Climbed)
+            {
+                currentAlgaeSpeed = 0f;
+            }
+            else if (isAlgaeReefSetpoint || (intakePressed && CurrentRobotMode == ReefscapeRobotMode.Algae))
             {
                 currentAlgaeSpeed = algaeActiveSpeed;
             }
@@ -219,6 +273,10 @@ namespace Prefabs.Reefscape.Robots.Mods.IndianaModpack._7457
                     if (roller != null) roller.ChangeAngularVelocity(currentAlgaeSpeed);
                 }
             }
+
+            // Update audio: check if either floor or L1 rollers are spinning
+            bool playIntakeAudio = (currentIntakeSpeed != 0f) || (currentL1Speed != 0f);
+            UpdateAudio(playIntakeAudio, hasAlgae, isScoringAlgae);
 
             // Climber Generic Rollers
             float currentClimberSpeed = (CurrentSetpoint == ReefscapeSetpoints.Climb) ? climberSpeed : 0f;
@@ -247,7 +305,8 @@ namespace Prefabs.Reefscape.Robots.Mods.IndianaModpack._7457
             
             _algaeController.SetTargetState(algaeStowState);
 
-            if (CurrentIntakeMode == ReefscapeIntakeMode.L1 && hasCoral)
+            // L1 Intake Transition Delay: Only buffer when the user has released the intake button
+            if (CurrentIntakeMode == ReefscapeIntakeMode.L1 && hasCoral && !intakePressed)
             {
                 if (CurrentSetpoint != ReefscapeSetpoints.Place && CurrentSetpoint != ReefscapeSetpoints.L1)
                     bufferedSetpoint = ReefscapeSetpoints.L1;
@@ -274,7 +333,10 @@ namespace Prefabs.Reefscape.Robots.Mods.IndianaModpack._7457
                     if (CurrentRobotMode == ReefscapeRobotMode.Algae)
                     {
                         SetRobotTargets(lollipop);
-                        _algaeController.RequestIntake(algaeIntake, !hasAlgae);
+                        _algaeController.RequestIntake(algaeIntake, !hasAlgae && intakePressed);
+                        
+                        _coralController.RequestIntake(endEffectorHolder, false);
+                        if (l1GamePieceIntake != null) _coralController.RequestIntake(l1GamePieceIntake, false);
                     }
                     else 
                     {
@@ -282,12 +344,24 @@ namespace Prefabs.Reefscape.Robots.Mods.IndianaModpack._7457
                         {
                             SetRobotTargets(l1Intake);
                             var targetIntake = l1GamePieceIntake != null ? l1GamePieceIntake : endEffectorHolder;
-                            _coralController.RequestIntake(targetIntake, !hasCoral && intakePressed);
+                            
+                            // Check if mechanisms are physically at the intake position
+                            bool isElevatorAtTarget = elevator != null && Mathf.Abs(elevator.GetElevatorHeight() - _elevatorTargetHeight) < 2.0f;
+                            bool isArmAtTarget = endEffector != null && Mathf.Abs(Mathf.DeltaAngle(endEffector.GetSingleAxisAngle(JointAxis.X), -_endEffectorTargetAngle)) < 15.0f;
+                            bool isAtSetpoint = isElevatorAtTarget && isArmAtTarget;
+
+                            _coralController.RequestIntake(targetIntake, !hasCoral && intakePressed && isAtSetpoint);
                         }
                         else
                         {
                             SetRobotTargets(intakePos);
-                            _coralController.RequestIntake(endEffectorHolder, !hasCoral && intakePressed);
+                            
+                            // Check if mechanisms are physically at the intake position
+                            bool isElevatorAtTarget = elevator != null && Mathf.Abs(elevator.GetElevatorHeight() - _elevatorTargetHeight) < 2.0f;
+                            bool isArmAtTarget = endEffector != null && Mathf.Abs(Mathf.DeltaAngle(endEffector.GetSingleAxisAngle(JointAxis.X), -_endEffectorTargetAngle)) < 15.0f;
+                            bool isAtSetpoint = isElevatorAtTarget && isArmAtTarget;
+
+                            _coralController.RequestIntake(endEffectorHolder, !hasCoral && intakePressed && isAtSetpoint);
                         }
                     }
                     break;
@@ -302,9 +376,7 @@ namespace Prefabs.Reefscape.Robots.Mods.IndianaModpack._7457
                     if (_stickyAlgaeMode) 
                     {
                         SetRobotTargets(l2); 
-                        
-                        if (!outtakePressed) 
-                            _algaeController.RequestIntake(algaeIntake, !hasAlgae);
+                        _algaeController.RequestIntake(algaeIntake, !hasAlgae && !outtakePressed);
                     }
                     else 
                     {
@@ -318,8 +390,7 @@ namespace Prefabs.Reefscape.Robots.Mods.IndianaModpack._7457
                     if (_stickyAlgaeMode) 
                     {
                         SetRobotTargets(l3); 
-                        if (!outtakePressed) 
-                            _algaeController.RequestIntake(algaeIntake, !hasAlgae);
+                        _algaeController.RequestIntake(algaeIntake, !hasAlgae && !outtakePressed);
                     }
                     else 
                     {
@@ -327,8 +398,14 @@ namespace Prefabs.Reefscape.Robots.Mods.IndianaModpack._7457
                     }
                     break;
 
-                case ReefscapeSetpoints.LowAlgae: SetRobotTargets(lowAlgae); _algaeController.RequestIntake(algaeIntake, !hasAlgae); break;
-                case ReefscapeSetpoints.HighAlgae: SetRobotTargets(highAlgae); _algaeController.RequestIntake(algaeIntake, !hasAlgae); break;
+                case ReefscapeSetpoints.LowAlgae: 
+                    SetRobotTargets(lowAlgae); 
+                    _algaeController.RequestIntake(algaeIntake, !hasAlgae && !outtakePressed); 
+                    break;
+                case ReefscapeSetpoints.HighAlgae: 
+                    SetRobotTargets(highAlgae); 
+                    _algaeController.RequestIntake(algaeIntake, !hasAlgae && !outtakePressed); 
+                    break;
                 
                 case ReefscapeSetpoints.L4:
                     if (hasAlgae) _algaeMode = true;
@@ -359,9 +436,38 @@ namespace Prefabs.Reefscape.Robots.Mods.IndianaModpack._7457
                     
                 default: SetRobotTargets(stow); break;
             }
+
+            // --- MASTER INTAKE SHUTOFF ---
+            if (!intakePressed)
+            {
+                _coralController.RequestIntake(endEffectorHolder, false);
+                if (l1GamePieceIntake != null) _coralController.RequestIntake(l1GamePieceIntake, false);
+                
+                // Allow automatic algae intaking to bypass the master shutoff
+                bool isAutoAlgae = _stickyAlgaeMode || CurrentSetpoint == ReefscapeSetpoints.LowAlgae || CurrentSetpoint == ReefscapeSetpoints.HighAlgae;
+                if (!isAutoAlgae)
+                {
+                    _algaeController.RequestIntake(algaeIntake, false);
+                }
+            }
+
+            // --- CORAL STATION DROP DISTANCE LOGIC ---
+            bool isElevatorReadyForCoral = elevator != null && Mathf.Abs(elevator.GetElevatorHeight() - _elevatorTargetHeight) < 2.0f;
+            bool isArmReadyForCoral = endEffector != null && Mathf.Abs(Mathf.DeltaAngle(endEffector.GetSingleAxisAngle(JointAxis.X), -_endEffectorTargetAngle)) < 15.0f;
+            
+            bool canIntakeCoral = (CurrentRobotMode == ReefscapeRobotMode.Coral) 
+                                  && (CurrentSetpoint == ReefscapeSetpoints.Intake) 
+                                  && !hasCoral 
+                                  && isElevatorReadyForCoral 
+                                  && isArmReadyForCoral;
+
+            if (CurrentCoralStationMode != null)
+            {
+                CurrentCoralStationMode.DropDistance = canIntakeCoral ? 1.55f : 0f;
+            }
         }
 
-        private void UpdateAudio(bool intakePressed, bool hasCoral, bool hasAlgae)
+        private void UpdateAudio(bool playIntakeAudio, bool hasAlgae, bool isScoringAlgae)
         {
             if (BaseGameManager.Instance.RobotState == RobotState.Disabled)
             {
@@ -371,17 +477,30 @@ namespace Prefabs.Reefscape.Robots.Mods.IndianaModpack._7457
                 return;
             }
 
-            bool runIntake = (intakePressed && !hasCoral);
             if (intakeAudio != null)
             {
-                if (runIntake && !intakeAudio.isPlaying) intakeAudio.Play();
-                else if (!runIntake && intakeAudio.isPlaying) intakeAudio.Stop();
+                if (playIntakeAudio && !intakeAudio.isPlaying) intakeAudio.Play();
+                else if (!playIntakeAudio && intakeAudio.isPlaying) intakeAudio.Stop();
             }
 
+            // --- ALGAE STALL AUDIO (1986Stall ONLY) ---
             if (algaeStallAudio != null)
             {
-                if (hasAlgae && !algaeStallAudio.isPlaying) algaeStallAudio.Play();
-                else if (!hasAlgae && algaeStallAudio.isPlaying) algaeStallAudio.Stop();
+                if (hasAlgae && !isScoringAlgae)
+                {
+                    // If holding an algae (and not actively outtaking it), play 1986Stall
+                    if (algaeStallAudio.clip != algaeStallClip)
+                    {
+                        algaeStallAudio.Stop();
+                        algaeStallAudio.clip = algaeStallClip;
+                    }
+                    if (!algaeStallAudio.isPlaying && algaeStallClip != null) algaeStallAudio.Play();
+                }
+                else
+                {
+                    // Turn off when idle, intaking, or scoring
+                    if (algaeStallAudio.isPlaying) algaeStallAudio.Stop();
+                }
             }
 
             bool isClimbing = (CurrentSetpoint == ReefscapeSetpoints.Climb);
@@ -396,6 +515,8 @@ namespace Prefabs.Reefscape.Robots.Mods.IndianaModpack._7457
         {
             if (setpoint == null) { elevator.SetTarget(0); return; }
             
+            _elevatorTargetHeight = setpoint.elevatorHeight;
+
             elevator.SetTarget(setpoint.elevatorHeight);
             intake.SetTargetAngle(setpoint.intakeAngle).withAxis(JointAxis.X).flipDirection();
             climber.SetTargetAngle(setpoint.climberAngle).withAxis(JointAxis.Z).flipDirection();
@@ -416,6 +537,7 @@ namespace Prefabs.Reefscape.Robots.Mods.IndianaModpack._7457
                 targetEEAngle = stow != null ? stow.endEffectorAngle : 0f;
             }
 
+            _endEffectorTargetAngle = targetEEAngle;
             endEffector.SetTargetAngle(targetEEAngle).withAxis(JointAxis.X).flipDirection();
         }
 

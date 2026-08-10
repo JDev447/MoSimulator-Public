@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c104705ba45043c4eb2aa445fcb9f354, type: 3}
   m_Name: L4
   m_EditorClassIdentifier: 
-  elevatorHeight: 40
+  elevatorHeight: 41
   endEffectorAngle: 515
   algaeManipulatorAngle: 0
   climberAngle: 0
-  funnelAngle: -50
+  funnelAngle: -49

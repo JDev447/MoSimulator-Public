@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Climbed
   m_EditorClassIdentifier: 
   elevatorHeight: 0
-  endEffectorAngle: 160
+  endEffectorAngle: 177
   algaeManipulatorAngle: 0
   climberAngle: 90
-  funnelAngle: -120
+  funnelAngle: -145
