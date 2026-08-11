@@ -104,7 +104,7 @@ namespace Prefabs.Reefscape.Robots.Mods.IndianaModpack._868
                 cInt = l1Int = l2Int = l3Int = l4Int = 20f;
             }
             // --- PRIORITY 2: READY FOR CORAL (ALL ORANGE) ---
-            else if (!hasCoral && !hasAlgae && (_robotBase.CurrentSetpoint == ReefscapeSetpoints.Stow || _robotBase.CurrentSetpoint == ReefscapeSetpoints.Intake))
+            else if (!hasCoral && !hasAlgae && _robotBase.CurrentRobotMode == ReefscapeRobotMode.Coral && (_robotBase.CurrentSetpoint == ReefscapeSetpoints.Stow || _robotBase.CurrentSetpoint == ReefscapeSetpoints.Intake))
             {
                 cTex = l1Tex = l2Tex = l3Tex = l4Tex = texOrange;
                 cInt = l1Int = l2Int = l3Int = l4Int = 20f;
@@ -112,7 +112,9 @@ namespace Prefabs.Reefscape.Robots.Mods.IndianaModpack._868
             // --- PRIORITY 3: STANDARD OPERATIONS ---
             else
             {
-                // Center LED Game Piece Flashing
+                bool isAlgaeSetpoint = _robotBase.CurrentSetpoint == ReefscapeSetpoints.LowAlgae || _robotBase.CurrentSetpoint == ReefscapeSetpoints.HighAlgae;
+
+                // Center LED Game Piece Flashing & Algae Mode
                 if (hasCoral)
                 {
                     cTex = texWhite;
@@ -123,21 +125,19 @@ namespace Prefabs.Reefscape.Robots.Mods.IndianaModpack._868
                     cTex = texGreen;
                     cInt = isFlashingOn ? 20f : 0f;
                 }
+                else if (_robotBase.CurrentRobotMode == ReefscapeRobotMode.Algae || isAlgaeSetpoint)
+                {
+                    cTex = texGreen;
+                    cInt = 20f;
+                }
 
                 // Level LED Targeting
-                if (isAutoAligning)
+                switch (_robotBase.CurrentSetpoint)
                 {
-                    switch (_robotBase.CurrentSetpoint)
-                    {
-                        case ReefscapeSetpoints.L2: l2Tex = texBlue; l2Int = 20f; break;
-                        case ReefscapeSetpoints.L3: l3Tex = texBlue; l3Int = 20f; break;
-                        case ReefscapeSetpoints.L4: l4Tex = texBlue; l4Int = 20f; break;
-                    }
-                }
-                else if (_robotBase.CurrentSetpoint == ReefscapeSetpoints.L1)
-                {
-                    l1Tex = texBlue;
-                    l1Int = 20f;
+                    case ReefscapeSetpoints.L1: l1Tex = texBlue; l1Int = 20f; break;
+                    case ReefscapeSetpoints.L2: l2Tex = texBlue; l2Int = 20f; break;
+                    case ReefscapeSetpoints.L3: l3Tex = texBlue; l3Int = 20f; break;
+                    case ReefscapeSetpoints.L4: l4Tex = texBlue; l4Int = 20f; break;
                 }
             }
 

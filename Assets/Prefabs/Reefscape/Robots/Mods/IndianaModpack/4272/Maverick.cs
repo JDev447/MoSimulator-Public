@@ -80,7 +80,12 @@ namespace Prefabs.Reefscape.Robots.Mods.IndianaModpack._4272
         [Header("Shooting Forces")]
         [SerializeField] private Vector3 standardScoreForce = new Vector3(0, -3f, 6f);
         [SerializeField] private Vector3 l1ScoreForce = new Vector3(0, -1.5f, 3f); 
-        [SerializeField] private Vector3 l4ScoreForce = new Vector3(0, 3f, 6f);
+        [SerializeField] private Vector3 l4ScoreForce = new Vector3(0, 0, 6f);
+
+        // Scoring Timer / Buffer Settings
+        [Header("Scoring Settings")]
+        [Tooltip("How long (in seconds) the robot holds its scoring position and spins rollers after releasing Outtake.")]
+        [SerializeField] private float scoreDelay = 0.1f;
 
         [Header("Movement Settings")]
         [SerializeField] private float elevatorTolerance = 1.5f;
@@ -102,6 +107,7 @@ namespace Prefabs.Reefscape.Robots.Mods.IndianaModpack._4272
         private float _lockedSafeHeight = 0f;
         private bool _isBargeSwing = false;
         private bool _isL4Swing = false;
+        private float _lastOuttakeTime = -10f;
         
         protected override void Start()
         {
@@ -147,10 +153,17 @@ namespace Prefabs.Reefscape.Robots.Mods.IndianaModpack._4272
             bool intakePressed = IntakeAction.IsPressed();
             bool outtakePressed = OuttakeAction.IsPressed();
             
-            // Update roller speeds
+            // Track Scoring Buffer Window
+            if (outtakePressed)
+            {
+                _lastOuttakeTime = Time.time;
+            }
+            bool isScoreBuffering = (Time.time - _lastOuttakeTime) <= scoreDelay;
+            
+            // Update roller speeds (Keep spinning during score buffering)
             float eeCurrentSpeed = 0f;
             if (intakePressed && !hasCoral) eeCurrentSpeed = eeCoralIntakeSpeed;
-            else if (outtakePressed)
+            else if (outtakePressed || (CurrentSetpoint == ReefscapeSetpoints.Place && isScoreBuffering))
             {
                 if (LastSetpoint == ReefscapeSetpoints.L4 || LastSetpoint == ReefscapeSetpoints.Barge) eeCurrentSpeed = coralL4ScoreSpeed;
                 else eeCurrentSpeed = coralStandardScoreSpeed;
@@ -160,7 +173,7 @@ namespace Prefabs.Reefscape.Robots.Mods.IndianaModpack._4272
                 foreach (var roller in endEffectorRollers)
                     if (roller != null) roller.ChangeAngularVelocity(eeCurrentSpeed);
 
-            // --- NEW: Block floor intake rollers from spinning during Low/High Algae setpoints ---
+            // Block intake rollers from spinning during Low/High Algae setpoints
             bool isAlgaeSetpoint = CurrentSetpoint == ReefscapeSetpoints.LowAlgae || CurrentSetpoint == ReefscapeSetpoints.HighAlgae;
             float floorIntakeCurrentSpeed = (intakePressed && !hasCoral && !isAlgaeSetpoint) ? floorIntakeSpeed : 0f;
             
@@ -170,7 +183,7 @@ namespace Prefabs.Reefscape.Robots.Mods.IndianaModpack._4272
 
             float algaeCurrentSpeed = 0f;
             if (intakePressed && !hasAlgae) algaeCurrentSpeed = algaeIntakeSpeed;
-            else if (outtakePressed) algaeCurrentSpeed = -algaeIntakeSpeed; 
+            else if (outtakePressed || (CurrentSetpoint == ReefscapeSetpoints.Place && isScoreBuffering)) algaeCurrentSpeed = -algaeIntakeSpeed; 
 
             if (algaeRollers != null)
                 foreach (var roller in algaeRollers)
@@ -267,7 +280,8 @@ namespace Prefabs.Reefscape.Robots.Mods.IndianaModpack._4272
                     SetSetpointTargets(climbed);
                     break;
                 case ReefscapeSetpoints.Place:
-                    if (OuttakeAction.IsPressed())
+                    // Hold position and rollers during scoreBuffering window
+                    if (outtakePressed || isScoreBuffering)
                     {
                         PlacePiece();
                         ReturnToLastSetpointTargets(); 
@@ -296,13 +310,24 @@ namespace Prefabs.Reefscape.Robots.Mods.IndianaModpack._4272
             UpdateJoints(activeForbiddenAngle);
             UpdateAudio(floorIntakeCurrentSpeed, eeCurrentSpeed, currentEEAngle);
 
-            // --- MASTER INTAKE SHUTOFF ---
-            // If the intake button is NOT actively held down, force shut off all intake requests immediately.
-            // This guarantees MoSim can never leave an intake toggled ON when jumping between setpoints!
             if (!intakePressed)
             {
                 _coralController.RequestIntake(coralIntake, false);
                 _algaeController.RequestIntake(algaeIntake, false);
+            }
+
+            // CORAL STATION DROP DISTANCE LOGIC
+            bool isElevatorDown = elevator == null || currentElevatorHeight < safeClearanceHeight;
+            bool isArmReady = endEffector == null || Mathf.Abs(Mathf.DeltaAngle(currentEEAngle, _endEffectorTargetAngle)) < 30.0f;
+            
+            bool canIntakeCoral = (CurrentSetpoint == ReefscapeSetpoints.Stow || CurrentSetpoint == ReefscapeSetpoints.Intake) 
+                                  && !hasCoral 
+                                  && isElevatorDown 
+                                  && isArmReady;
+
+            if (CurrentCoralStationMode != null)
+            {
+                CurrentCoralStationMode.DropDistance = canIntakeCoral ? 1.55f : 0f;
             }
         }
 
@@ -315,7 +340,7 @@ namespace Prefabs.Reefscape.Robots.Mods.IndianaModpack._4272
             }
             else if (_coralController.HasPiece())
             {
-                if (LastSetpoint == ReefscapeSetpoints.L4) _coralController.ReleaseGamePieceWithContinuedForce(l4ScoreForce, 1f, 0.5f);
+                if (LastSetpoint == ReefscapeSetpoints.L4) _coralController.ReleaseGamePieceWithForce(l4ScoreForce);
                 else if (LastSetpoint == ReefscapeSetpoints.L1) _coralController.ReleaseGamePieceWithForce(l1ScoreForce);
                 else _coralController.ReleaseGamePieceWithForce(standardScoreForce);
             }

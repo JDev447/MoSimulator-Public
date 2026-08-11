@@ -58,7 +58,7 @@ namespace Prefabs.Reefscape.Robots.Mods.IndianaModpack._868
         [SerializeField] private float rollerOuttakeSpeed = -1000f;
         [SerializeField] private float rollerL1OuttakeSpeed = -400f; 
 
-        // --- NEW: Scoring Forces ---
+        // Scoring Forces
         [Header("Scoring Forces")]
         [Tooltip("The Z-axis force applied when scoring Coral at standard setpoints (L2, L3, L4).")]
         [SerializeField] private float coralStandardScoreForce = 15f;
@@ -217,14 +217,14 @@ namespace Prefabs.Reefscape.Robots.Mods.IndianaModpack._868
                         SetSetpointTargets(groundAlgae);
                         _algaeController.RequestIntake(algaeIntake, !hasAlgae && !hasCoral && intakePressed);
                         
-                        // --- NEW: Explicitly disable coral intake in Algae mode ---
+                        // Explicitly disable coral intake in Algae mode
                         _coralController.RequestIntake(coralIntake, false);
                     }
                     else 
                     {
                         SetSetpointTargets(intake);
                         
-                        // --- NEW: Check if mechanisms are physically at the intake position ---
+                        // Check if mechanisms are physically at the intake position
                         bool isElevatorAtTarget = elevator != null && Mathf.Abs(currentElevatorHeight - _elevatorTargetHeight) < 2.0f;
                         bool isArmAtTarget = endEffector != null && Mathf.Abs(Mathf.DeltaAngle(currentEEAngle, _endEffectorTargetAngle)) < 15.0f;
                         bool isAtSetpoint = isElevatorAtTarget && isArmAtTarget;
@@ -304,7 +304,7 @@ namespace Prefabs.Reefscape.Robots.Mods.IndianaModpack._868
                 _algaeController.RequestIntake(algaeIntake, false);
             }
 
-            // --- CORAL STATION DROP DISTANCE LOGIC ---
+            // CORAL STATION DROP DISTANCE LOGIC
             bool isElevatorReady = elevator != null && Mathf.Abs(currentElevatorHeight - _elevatorTargetHeight) < 2.0f;
             bool isArmReady = endEffector != null && Mathf.Abs(Mathf.DeltaAngle(currentEEAngle, _endEffectorTargetAngle)) < 15.0f;
             
@@ -366,7 +366,7 @@ namespace Prefabs.Reefscape.Robots.Mods.IndianaModpack._868
 
         private void PlacePiece()
         {
-            // --- NEW: Adjusted Scoring Force Logic ---
+            // Adjusted Scoring Force Logic
             if (_algaeController.HasPiece())
             {
                 _algaeController.ReleaseGamePieceWithForce(new Vector3(0, 0, algaeScoreForce));
