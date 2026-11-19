@@ -4049,6 +4049,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   brakeModeMultiplyer: 1
   ignoreDisabledMode: 1
+  lockJointOnDisable: 0
   movementAudioClip: {fileID: 8300000, guid: 3438207a3ba053e4ba66b82d6f9108d2, type: 3}
   audioErrorThreshold: 3
   audioErrorDeltaThreshold: 25
@@ -4072,6 +4073,7 @@ MonoBehaviour:
   velocityAxis: 0
   noWrap: 0
   noWrapAngle: 0
+  isWrapping: 0
 --- !u!1 &668340711003012648
 GameObject:
   m_ObjectHideFlags: 0
@@ -4957,8 +4959,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.000050800005, y: 0.0019173692, z: 0.0020134172}
-  m_Center: {x: -0.000025400002, y: -0.00063248485, z: 0.0011859236}
+  m_Size: {x: 0.000050800005, y: 0.0039421786, z: 0.002013417}
+  m_Center: {x: -0.000025400002, y: 0.0003799226, z: 0.0011859239}
 --- !u!1 &814596279674020289
 GameObject:
   m_ObjectHideFlags: 0
@@ -5659,7 +5661,7 @@ BoxCollider:
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 256
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
@@ -9024,6 +9026,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   brakeModeMultiplyer: 1
   ignoreDisabledMode: 1
+  lockJointOnDisable: 0
   movementAudioClip: {fileID: 8300000, guid: 3438207a3ba053e4ba66b82d6f9108d2, type: 3}
   audioErrorThreshold: 3
   audioErrorDeltaThreshold: 25
@@ -9047,6 +9050,7 @@ MonoBehaviour:
   velocityAxis: 0
   noWrap: 0
   noWrapAngle: 0
+  isWrapping: 0
 --- !u!114 &2840673049723649269
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9667,6 +9671,7 @@ GameObject:
   - component: {fileID: 957471279619777897}
   - component: {fileID: 7547716987826079684}
   - component: {fileID: 5083577746626087478}
+  - component: {fileID: 7555092343423846570}
   m_Layer: 6
   m_Name: 25-ELEV-P014
   m_TagString: Untagged
@@ -9741,6 +9746,27 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &7555092343423846570
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1814259780734930713}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.0006367405, y: 0.0006351061, z: 0.0023177522}
+  m_Center: {x: 0.000000055137207, y: -0.018145178, z: 0.0011588747}
 --- !u!1 &1816438013283139162
 GameObject:
   m_ObjectHideFlags: 0
@@ -13251,23 +13277,41 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   drivetrainParent: {fileID: 6852044451109248894}
-  wheelDiameter: 4
-  maxSpeed:
-    _obfuscationKey: 246991722
-    _encryptedValue: 1328073578
-  accelerationForce:
-    _obfuscationKey: 373581066
-    _encryptedValue: 1464624394
-  falloffPercent: 0.075
-  falloffExponent: 10
-  steerMultiplier: 0.75
-  speedDebug: 0
-  swerveAudioMixerGroup: {fileID: 4093094553572483033, guid: ed4b10d8b69fb1240aaf15a3cba9d0bd,
+  drivetrainType: 0
+  maxVelocity:
+    _obfuscationKey: 2041688839
+    _encryptedValue: 959558407
+  maxOmega: 0
+  motor:
+    motorType: 0
+    config:
+      K_p: 0.5
+      K_s: 0
+      K_v: 0.136
+      K_a: 0
+      StatorLimit: 80
+      SupplyLimit: 40
+      MaxVelocity: 4.45
+      MaxAcceleration: 0
+  realWorldWeightLbs: 115
+  motorsPerPowertrain: 1
+  gearRatio: 6.746032
+  wheelDiameterInches: 4
+  wheelRotationalInertia: 0.002
+  mechanicalLossPercent: 1.5
+  frictionCoefficient: 1.2
+  biteFactor: 0.2
+  contactPatchWidthInches: 1.5
+  contactTolerance: 0.01
+  lateralGripResponse: 0.1
+  audioMixerGroup: {fileID: 4093094553572483033, guid: ed4b10d8b69fb1240aaf15a3cba9d0bd,
     type: 2}
   gearAudioResource: {fileID: 8300000, guid: affe685e481d252409ce6efa8d637caa, type: 3}
   treadAudioResource: {fileID: 8300000, guid: a678915028b06f14a96455d7b29c3fab, type: 3}
-  moveSpeedMultiplier: 0
-  rotationSpeedMultiplier: 0
+  debugWheelVelocity: 0
+  debugWheelTorque: 0
+  debugChassisPosition: 0
+  debugChassisVelocity: 0
 --- !u!114 &3163079999352775637
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13374,6 +13418,18 @@ MonoBehaviour:
       m_Calls: []
     m_ActionId: d480e14c-5f97-43c4-8a55-fe5c5d05d7de
     m_ActionName: 'Robot/RightStickModifier[/XInputControllerWindows/rightStickPress]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 6d5f6ded-fd91-441a-bafb-815f592af230
+    m_ActionName: 'Robot/DriveSpeed1[/Keyboard/1]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: cb9e9595-2922-40f7-ae9c-571dbab36690
+    m_ActionName: 'Robot/DriveSpeed2[/Keyboard/2]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 272f6a01-ba06-4a0f-a131-7876d326cce9
+    m_ActionName: 'Robot/DriveSpeed3[/Keyboard/3]'
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Robot
@@ -13423,10 +13479,10 @@ MonoBehaviour:
     Max: 1.5
     Isaturation: 0
   stagesPidConstants:
-    kP: 100
+    kP: 0
     kI: 0
-    kD: 0.1
-    Max: 1
+    kD: 0
+    Max: 0
     Isaturation: 0
   elevatorAxis: 1
   flipped: 0
@@ -13459,11 +13515,35 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   alliance: 0
-  bumperMeshes:
-  - {fileID: 2410220643170001112}
-  blueBumperMaterial: {fileID: 2100000, guid: 4fee27b819da64142b7a2a9ba75bb033, type: 2}
-  redBumperMaterial: {fileID: 2100000, guid: 4fee27b819da64142b7a2a9ba75bb033, type: 2}
-  <CurrentSetpoint>k__BackingField: 0
+  useCustomDefaultSpawn: 1
+  defaultSpawn:
+    position: {x: 0, y: 0}
+    rotation: 90
+  bumpers:
+    bumperMeshes:
+    - {fileID: 5935068391369815195}
+    materialIndex: 0
+    blueBumperMaterial: {fileID: 2100000, guid: 1b3126d9e9c61104d9607d618c4c546c,
+      type: 2}
+    redBumperMaterial: {fileID: 2100000, guid: 8891c8be8334c264dbe596d910db7283, type: 2}
+    Vanity:
+      AllowVanity: 1
+      VanityType: 0
+      VanityColor: {r: 0, g: 0, b: 0, a: 0}
+      VanityMaterial: {fileID: 0}
+      DisableOnVanity:
+      - {fileID: 5286492801005032782}
+      EnableOnVanity:
+      - {fileID: 3195887966284237675}
+  RSLSettings:
+    RSLMesh: {fileID: 0}
+    materialIndex: 0
+    rslOnMaterial: {fileID: 0}
+    rslOffMaterial: {fileID: 0}
+  RobotAngle: {x: 0, y: 0, z: 0}
+  GyroRelativity: 0
+  useVanity: 0
+  gamePieceCollisionIgnoreExclusions: []
   <CurrentCoralStationMode>k__BackingField:
     <DropType>k__BackingField: 1
     <DropDistance>k__BackingField: 1.55
@@ -13475,6 +13555,7 @@ MonoBehaviour:
     <TargetTransform>k__BackingField: {fileID: 1904499448926838172}
     <DrawDebugLines>k__BackingField: 0
   superCycler: 1
+  bumperCollider: {fileID: 0}
   elevator: {fileID: 1675193248588328775}
   intake: {fileID: 8421992736358569778}
   endEffector: {fileID: 4704168106418274307}
@@ -13606,23 +13687,44 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 84285a51c5b987842b784c1508e6a743, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  drivePID:
-    kP: 22
-    kI: 0
-    kD: 2.5
-    Max: 0.8
-    Isaturation: 1
-  rotatePID:
-    kP: 0.05
-    kI: 0
-    kD: 0.003
-    Max: 0.75
-    Isaturation: 1
-  offset: {x: 0, y: 0, z: 10}
-  rotation: 0
+  rotationReference: {fileID: 0}
+  debugEnabled: 0
+  K_p: 0
+  K_i: 0
+  K_d: 0
+  PIDMax: 0
+  I_zone: 0
+  integratorRange: 0
+  maxOmega: 0
+  maxAlpha: 0
+  maxAlphaDot: 0
+  rotationApproachTime: 0.1
+  rotationPredictionTime: 0.06
+  alignControl: 0
+  positionK_p: 0
+  positionK_i: 0
+  positionK_d: 0
+  positionPIDMax: 0
+  positionI_zone: 0
+  positionIntegratorRange: 0
+  maxVelocity: 0
+  maxDeceleration: 0
+  maxJerk: 0
+  positionApproachTime: 0.2
+  positionPredictionTime: 0.06
+  positionBrakingSafetyFactor: 0.7
+  recoveryThreshold: 4
+  useLegacyOffsets: 0
+  legacyOffset:
+    x: 0
+    y: 0
+    theta: 0
+  x: 1.3
+  y: 0.17
+  positionTolerance: 0.05
   enableForwardAlign: 1
   enableBackwardsAlign: 0
-  maxAlignDistanceFeet: 15
+  aimControl: 1
 --- !u!114 &530658707926204154
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17183,7 +17285,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2653588527414571488
 Transform:
   m_ObjectHideFlags: 0
@@ -24839,6 +24941,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   brakeModeMultiplyer: 1
   ignoreDisabledMode: 0
+  lockJointOnDisable: 0
   movementAudioClip: {fileID: 0}
   audioErrorThreshold: 3
   audioErrorDeltaThreshold: 25
@@ -24862,6 +24965,7 @@ MonoBehaviour:
   velocityAxis: 0
   noWrap: 0
   noWrapAngle: 0
+  isWrapping: 0
 --- !u!1 &5085793160899507339
 GameObject:
   m_ObjectHideFlags: 0
@@ -25655,7 +25759,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &4762193342394060788
 Transform:
   m_ObjectHideFlags: 0
@@ -27775,6 +27879,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   brakeModeMultiplyer: 1
   ignoreDisabledMode: 1
+  lockJointOnDisable: 0
   movementAudioClip: {fileID: 8300000, guid: 3438207a3ba053e4ba66b82d6f9108d2, type: 3}
   audioErrorThreshold: 3
   audioErrorDeltaThreshold: 25
@@ -27798,6 +27903,7 @@ MonoBehaviour:
   velocityAxis: 0
   noWrap: 0
   noWrapAngle: 0
+  isWrapping: 0
 --- !u!114 &6974931919586626829
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -31341,6 +31447,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   brakeModeMultiplyer: 1
   ignoreDisabledMode: 0
+  lockJointOnDisable: 0
   movementAudioClip: {fileID: 0}
   audioErrorThreshold: 3
   audioErrorDeltaThreshold: 25
@@ -31364,6 +31471,7 @@ MonoBehaviour:
   velocityAxis: 0
   noWrap: 0
   noWrapAngle: 0
+  isWrapping: 0
 --- !u!82 &1607047100348187120
 AudioSource:
   m_ObjectHideFlags: 0
@@ -36111,8 +36219,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.189093, y: 0.09962404, z: 0.06890699}
-  m_Center: {x: 0, y: -0.12666076, z: -0.024231985}
+  m_Size: {x: 0.189093, y: 0.097280025, z: 0.06890699}
+  m_Center: {x: 0, y: -0.12548876, z: -0.024231985}
 --- !u!82 &3683442690576077263
 AudioSource:
   m_ObjectHideFlags: 0
@@ -39049,8 +39157,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.000037323385, y: 0.001838922, z: 0.002062621}
-  m_Center: {x: 0.001302138, y: -0.00070583273, z: 0.001160121}
+  m_Size: {x: 0.000037323236, y: 0.0038514496, z: 0.0020626206}
+  m_Center: {x: 0.001302138, y: 0.0003004361, z: 0.0011601214}
 --- !u!1 &7800270217753883137
 GameObject:
   m_ObjectHideFlags: 0

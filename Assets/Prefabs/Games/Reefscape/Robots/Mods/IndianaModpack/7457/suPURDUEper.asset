@@ -16,8 +16,8 @@ MonoBehaviour:
   teamName: suPURDUEper Robotics
   robotImage: {fileID: 21300000, guid: f9f653dbedfba4b4f9692555a65564fb, type: 3}
   mainRobot:
-    displayName: 
-    robotPrefab: {fileID: 2534371394911199621, guid: d8637f6e2f7510642b685a1a1e64c06f,
+    displayName: Golden Coral
+    robotPrefab: {fileID: 2534371394911199621, guid: df87b79e29957d949b59da6c093217f0,
       type: 3}
     mainMenuPrefab: {fileID: 2534371394911199621, guid: 7a3b2baefc5eca645a5587b3c301a754,
       type: 3}
