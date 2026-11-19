@@ -416,7 +416,7 @@ namespace Prefabs.Reefscape.Robots.Mods.IndianaModpack._7457
                     break;
 
                 case ReefscapeSetpoints.L2: 
-                    if (IsAlgaeInFront() || (hasCoral && intakePressed)) _stickyAlgaeMode = true;
+                    if (IsAlgaeInFront()) _stickyAlgaeMode = true;
 
                     if (_stickyAlgaeMode) 
                     {
@@ -430,7 +430,7 @@ namespace Prefabs.Reefscape.Robots.Mods.IndianaModpack._7457
                     break;
 
                 case ReefscapeSetpoints.L3: 
-                    if (IsAlgaeInFront() || (hasCoral && intakePressed)) _stickyAlgaeMode = true;
+                    if (IsAlgaeInFront()) _stickyAlgaeMode = true;
 
                     if (_stickyAlgaeMode) 
                     {

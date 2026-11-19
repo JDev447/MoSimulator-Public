@@ -20,7 +20,9 @@ namespace Prefabs.Reefscape.Robots.Mods.IndianaModpack._7457
         public suPURDUEperClimber mainClimber;        
         
         // --- NEW: Public property for the main robot to read ---
-        public bool HasDetectedObject { get; private set; } = false;
+        private readonly HashSet<Collider> detectedAlgae = new HashSet<Collider>();
+
+        public bool HasDetectedObject => detectedAlgae.Count > 0;
 
         private void OnTriggerEnter(Collider other)
         {
@@ -36,7 +38,7 @@ namespace Prefabs.Reefscape.Robots.Mods.IndianaModpack._7457
                 // Check for Algae (Tag or Name fallback)
                 if (IsAlgae(other))
                 {
-                    HasDetectedObject = true;
+                    detectedAlgae.Add(other);
                 }
             }
         }
@@ -54,7 +56,7 @@ namespace Prefabs.Reefscape.Robots.Mods.IndianaModpack._7457
             {
                 if (IsAlgae(other))
                 {
-                    HasDetectedObject = false;
+                    detectedAlgae.Remove(other);
                 }
             }
         }
@@ -62,11 +64,10 @@ namespace Prefabs.Reefscape.Robots.Mods.IndianaModpack._7457
         // Helper to safely identify Algae
         private bool IsAlgae(Collider other)
         {
-            // Tries multiple checks to be safe
-            if (other.CompareTag("GamePiece")) return other.name.Contains("Algae");
-            if (other.CompareTag("Algae")) return true;
-            if (other.gameObject.layer == LayerMask.NameToLayer("GamePiece") && other.name.Contains("Algae")) return true;
-            
+            for (Transform current = other.transform; current != null; current = current.parent)
+            {
+                if (current.CompareTag("Algae")) return true;
+            }
             return false;
         }
     }
