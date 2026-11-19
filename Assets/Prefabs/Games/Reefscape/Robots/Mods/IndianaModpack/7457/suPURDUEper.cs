@@ -321,8 +321,9 @@ namespace Prefabs.Reefscape.Robots.Mods.IndianaModpack._7457
             // --- AUDIO LOGIC ---
             bool playIntakeAudio = (currentIntakeSpeed != 0f) || (currentL1Speed != 0f);
             
-            bool isActivelyRollingAlgae = (currentAlgaeSpeed == algaeScoreSpeed) || 
-                                          (currentAlgaeSpeed == algaeActiveSpeed && (_stickyAlgaeMode || IsAlgaeInFront() || (intakePressed && EffectiveAlgaeMode)));
+            bool isActivelyRollingAlgae = currentAlgaeSpeed == algaeScoreSpeed ||
+                                          (currentAlgaeSpeed == algaeActiveSpeed &&
+                                           (IsAlgaeInFront() || (CurrentSetpoint == ReefscapeSetpoints.Intake && EffectiveAlgaeMode)));
             
             UpdateAudio(playIntakeAudio, hasAlgae, isScoringAlgae, isActivelyRollingAlgae, canEEOuttake);
 
@@ -415,32 +416,16 @@ namespace Prefabs.Reefscape.Robots.Mods.IndianaModpack._7457
                     else SetRobotTargets(l1);
                     break;
 
-                case ReefscapeSetpoints.L2: 
+                case ReefscapeSetpoints.L2:
                     if (IsAlgaeInFront()) _stickyAlgaeMode = true;
-
-                    if (_stickyAlgaeMode) 
-                    {
-                        SetRobotTargets(l2); 
-                        _algaeController.RequestIntake(algaeIntake, !hasAlgae && !outtakePressed);
-                    }
-                    else 
-                    {
-                        SetRobotTargets(l2Optimized); 
-                    }
+                    SetRobotTargets(_stickyAlgaeMode ? l2 : l2Optimized);
+                    _algaeController.RequestIntake(algaeIntake, hasCoral && !hasAlgae && !outtakePressed);
                     break;
 
-                case ReefscapeSetpoints.L3: 
+                case ReefscapeSetpoints.L3:
                     if (IsAlgaeInFront()) _stickyAlgaeMode = true;
-
-                    if (_stickyAlgaeMode) 
-                    {
-                        SetRobotTargets(l3); 
-                        _algaeController.RequestIntake(algaeIntake, !hasAlgae && !outtakePressed);
-                    }
-                    else 
-                    {
-                        SetRobotTargets(l3Optimized);
-                    }
+                    SetRobotTargets(_stickyAlgaeMode ? l3 : l3Optimized);
+                    _algaeController.RequestIntake(algaeIntake, hasCoral && !hasAlgae && !outtakePressed);
                     break;
 
                 case ReefscapeSetpoints.LowAlgae: 
@@ -487,7 +472,7 @@ namespace Prefabs.Reefscape.Robots.Mods.IndianaModpack._7457
                 _coralController.RequestIntake(endEffectorHolder, false);
                 if (l1GamePieceIntake != null) _coralController.RequestIntake(l1GamePieceIntake, false);
                 
-                bool isAutoAlgae = _stickyAlgaeMode || CurrentSetpoint == ReefscapeSetpoints.LowAlgae || CurrentSetpoint == ReefscapeSetpoints.HighAlgae;
+                bool isAutoAlgae = (hasCoral && (CurrentSetpoint == ReefscapeSetpoints.L2 || CurrentSetpoint == ReefscapeSetpoints.L3)) || _stickyAlgaeMode || CurrentSetpoint == ReefscapeSetpoints.LowAlgae || CurrentSetpoint == ReefscapeSetpoints.HighAlgae;
                 if (!isAutoAlgae)
                 {
                     _algaeController.RequestIntake(algaeIntake, false);
@@ -598,7 +583,7 @@ namespace Prefabs.Reefscape.Robots.Mods.IndianaModpack._7457
         {
             if (_algaeMode || (LastSetpoint == ReefscapeSetpoints.Barge && _algaeController.HasPiece()))
             {
-                 if (_algaeController.HasPiece()) _algaeController.ReleaseGamePieceWithForce(new Vector3(0, 0, 6f));
+                 if (_algaeController.HasPiece()) _algaeController.ReleaseGamePieceWithForce(new Vector3(0, 0, 7f), ForceMode.Impulse, false);
                  SetRobotTargets(barge);
                  return;
             }
@@ -606,7 +591,7 @@ namespace Prefabs.Reefscape.Robots.Mods.IndianaModpack._7457
             if (LastSetpoint == ReefscapeSetpoints.L4)
             {
                 SetRobotTargets(l4);
-                if (_coralController.HasPiece()) _coralController.ReleaseGamePieceWithContinuedForce(new Vector3(0, 0, 6f), 1f, 0.5f);
+                if (_coralController.HasPiece()) _coralController.ReleaseGamePieceWithContinuedForce(new Vector3(0, 0, 4f), 1f, 0.5f);
                 else if (_releaseDetected) SetRobotTargets(l4Score);
                 return;
             }
@@ -628,7 +613,7 @@ namespace Prefabs.Reefscape.Robots.Mods.IndianaModpack._7457
             else
             {
                 if (_algaeController.HasPiece())
-                    _algaeController.ReleaseGamePieceWithForce(new Vector3(0, 0, 6f));
+                    _algaeController.ReleaseGamePieceWithForce(new Vector3(0, 0, 5f), ForceMode.Impulse, false);
             }
         }
 

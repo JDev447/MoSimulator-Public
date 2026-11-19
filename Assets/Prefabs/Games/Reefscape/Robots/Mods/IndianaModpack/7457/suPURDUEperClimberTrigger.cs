@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Prefabs.Reefscape.Robots.Mods.IndianaModpack._7457
@@ -16,53 +14,51 @@ namespace Prefabs.Reefscape.Robots.Mods.IndianaModpack._7457
         public SensorMode mode = SensorMode.Cage;
 
         [Header("Cage Mode References")]
-        // Only needed if mode is Cage
-        public suPURDUEperClimber mainClimber;        
-        
-        // --- NEW: Public property for the main robot to read ---
-        private readonly HashSet<Collider> detectedAlgae = new HashSet<Collider>();
+        public suPURDUEperClimber mainClimber;
 
-        public bool HasDetectedObject => detectedAlgae.Count > 0;
+        private BoxCollider algaeDetector;
+
+        public bool HasDetectedObject
+        {
+            get
+            {
+                if (mode != SensorMode.Algae) return false;
+                if (algaeDetector == null) algaeDetector = GetComponent<BoxCollider>();
+                if (algaeDetector == null || !algaeDetector.enabled) return false;
+
+                Transform sensor = algaeDetector.transform;
+                Vector3 scale = sensor.lossyScale;
+                Vector3 halfExtents = Vector3.Scale(
+                    algaeDetector.size,
+                    new Vector3(Mathf.Abs(scale.x), Mathf.Abs(scale.y), Mathf.Abs(scale.z))) * 0.5f;
+                Collider[] overlaps = Physics.OverlapBox(
+                    sensor.TransformPoint(algaeDetector.center),
+                    halfExtents,
+                    sensor.rotation,
+                    ~0,
+                    QueryTriggerInteraction.Collide);
+
+                foreach (Collider other in overlaps)
+                {
+                    if (IsAlgae(other)) return true;
+                }
+                return false;
+            }
+        }
 
         private void OnTriggerEnter(Collider other)
         {
-            if (mode == SensorMode.Cage)
-            {
-                if (other.gameObject.CompareTag("Cage")) 
-                {
-                    if(mainClimber != null) mainClimber.NotifyTriggered(this, true);
-                }
-            }
-            else if (mode == SensorMode.Algae)
-            {
-                // Check for Algae (Tag or Name fallback)
-                if (IsAlgae(other))
-                {
-                    detectedAlgae.Add(other);
-                }
-            }
+            if (mode == SensorMode.Cage && other.CompareTag("Cage") && mainClimber != null)
+                mainClimber.NotifyTriggered(this, true);
         }
 
-        private void OnTriggerExit(Collider other) 
+        private void OnTriggerExit(Collider other)
         {
-            if (mode == SensorMode.Cage)
-            {
-                if (other.gameObject.CompareTag("Cage")) 
-                {
-                    if(mainClimber != null) mainClimber.NotifyTriggered(this, false);
-                }
-            }
-            else if (mode == SensorMode.Algae)
-            {
-                if (IsAlgae(other))
-                {
-                    detectedAlgae.Remove(other);
-                }
-            }
+            if (mode == SensorMode.Cage && other.CompareTag("Cage") && mainClimber != null)
+                mainClimber.NotifyTriggered(this, false);
         }
 
-        // Helper to safely identify Algae
-        private bool IsAlgae(Collider other)
+        private static bool IsAlgae(Collider other)
         {
             for (Transform current = other.transform; current != null; current = current.parent)
             {
