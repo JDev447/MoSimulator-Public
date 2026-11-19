@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   elevatorHeight: -5
   endEffectorAngle: -5
-  climberAngle: 65
+  climberAngle: 0

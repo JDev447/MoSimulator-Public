@@ -89,12 +89,19 @@ namespace Prefabs.Reefscape.Robots.Mods.IndianaModpack._868
         [SerializeField] private float l3MinAlignHeight = 25f;
         [Tooltip("Minimum elevator height required before pushing forward for L4.")]
         [SerializeField] private float l4MinAlignHeight = 45f;
+        [Tooltip("Time to hold the mechanisms at their previous setpoint while backing up during a setpoint change.")]
+        [SerializeField] private float alignRetractDelay = 0.5f;
 
         private RobotGamePieceController<ReefscapeGamePiece, ReefscapeGamePieceData>.GamePieceControllerNode _coralController;
         private RobotGamePieceController<ReefscapeGamePiece, ReefscapeGamePieceData>.GamePieceControllerNode _algaeController;
         
         private ReefscapeAutoAlign _align;
         private bool _isPreAligned = false;
+        
+        // State tracking for the retract delay
+        private ReefscapeSetpoints _lastTrackedSetpoint = ReefscapeSetpoints.Stow; 
+        private ReefscapeSetpoints _activeMechanismSetpoint = ReefscapeSetpoints.Stow;
+        private float _retractTimer = 0f;
 
         private float _elevatorTargetHeight;
         private float _endEffectorTargetAngle;
@@ -185,12 +192,40 @@ namespace Prefabs.Reefscape.Robots.Mods.IndianaModpack._868
 
             UpdateAudio(currentRollerSpeed);
 
+            // --- ALIGNMENT RETRACT LOGIC ---
+            bool isAligning = AutoAlignLeftAction.IsPressed() || AutoAlignRightAction.IsPressed();
+
+            if (CurrentSetpoint != _lastTrackedSetpoint)
+            {
+                // Only trigger the retract penalty if we are changing to a new node, NOT if we are just scoring
+                if (isAligning && CurrentSetpoint != ReefscapeSetpoints.Place)
+                {
+                    _isPreAligned = false;
+                    _retractTimer = alignRetractDelay; 
+                }
+                else if (!isAligning)
+                {
+                    _retractTimer = 0f;
+                }
+                _lastTrackedSetpoint = CurrentSetpoint;
+            }
+
+            if (_retractTimer > 0f && isAligning)
+            {
+                _retractTimer -= Time.fixedDeltaTime;
+            }
+            else
+            {
+                _retractTimer = 0f;
+                _activeMechanismSetpoint = CurrentSetpoint; // Update mechanisms once timer is clear
+            }
+
             float currentElevatorHeight = elevator.GetElevatorHeight();
             float currentEEAngle = endEffector.GetSingleAxisAngle(JointAxis.X); 
             
             bool isArmOut = Mathf.Abs(Mathf.DeltaAngle(currentEEAngle, currentStow.endEffectorAngle)) > angleTolerance;
 
-            bool isL4Action = (CurrentSetpoint == ReefscapeSetpoints.L4);
+            bool isL4Action = (_activeMechanismSetpoint == ReefscapeSetpoints.L4);
 
             if (isL4Action) _isL4Swing = true;
             
@@ -199,9 +234,7 @@ namespace Prefabs.Reefscape.Robots.Mods.IndianaModpack._868
                 if (!isL4Action) _isL4Swing = false;
             }
 
-            UpdateAutoAlignOffsets(currentElevatorHeight);
-
-            switch (CurrentSetpoint)
+            switch (_activeMechanismSetpoint)
             {
                 case ReefscapeSetpoints.Stow: 
                     SetSetpointTargets(currentStow); 
@@ -296,6 +329,8 @@ namespace Prefabs.Reefscape.Robots.Mods.IndianaModpack._868
                 _endEffectorTargetAngle = _isL4Swing ? l4Score.endEffectorAngle : currentEEAngle;
             }
 
+            UpdateAutoAlignOffsets(currentElevatorHeight);
+
             UpdateJoints();
             
             if (!intakePressed)
@@ -309,7 +344,7 @@ namespace Prefabs.Reefscape.Robots.Mods.IndianaModpack._868
             bool isArmReady = endEffector != null && Mathf.Abs(Mathf.DeltaAngle(currentEEAngle, _endEffectorTargetAngle)) < 15.0f;
             
             bool canIntakeCoral = (CurrentRobotMode == ReefscapeRobotMode.Coral) 
-                                  && (CurrentSetpoint == ReefscapeSetpoints.Intake) 
+                                  && (_activeMechanismSetpoint == ReefscapeSetpoints.Intake) 
                                   && !hasCoral 
                                   && !hasAlgae
                                   && isElevatorReady 
@@ -325,23 +360,43 @@ namespace Prefabs.Reefscape.Robots.Mods.IndianaModpack._868
         {
             if (_align == null) return;
 
-            if (!AutoAlignLeftAction.IsPressed() && !AutoAlignRightAction.IsPressed())
+            bool isAligning = AutoAlignLeftAction.IsPressed() || AutoAlignRightAction.IsPressed();
+
+            if (!isAligning)
             {
                 _isPreAligned = false;
                 return;
             }
 
-            float requiredHeight = 0f;
-            if (CurrentSetpoint == ReefscapeSetpoints.L2) requiredHeight = l2MinAlignHeight;
-            else if (CurrentSetpoint == ReefscapeSetpoints.L3) requiredHeight = l3MinAlignHeight;
-            else if (CurrentSetpoint == ReefscapeSetpoints.L4) requiredHeight = l4MinAlignHeight;
+            // If we are actively scoring, evaluate the height requirements of the node we are scoring on
+            ReefscapeSetpoints alignSetpoint = _activeMechanismSetpoint;
+            if (alignSetpoint == ReefscapeSetpoints.Place)
+            {
+                alignSetpoint = LastSetpoint;
+            }
 
-            if (!_isPreAligned)
+            float requiredHeight = 0f;
+            if (alignSetpoint == ReefscapeSetpoints.L2) requiredHeight = l2MinAlignHeight;
+            else if (alignSetpoint == ReefscapeSetpoints.L3) requiredHeight = l3MinAlignHeight;
+            else if (alignSetpoint == ReefscapeSetpoints.L4) requiredHeight = l4MinAlignHeight;
+
+            // Check if the elevator is actively moving down to reach a lower setpoint
+            bool isDescending = currentElevatorHeight > _elevatorTargetHeight + elevatorTolerance;
+
+            // Only allow the robot to push forward if the retract timer has finished
+            // AND the elevator isn't dropping down from a higher node.
+            if (!_isPreAligned && _retractTimer <= 0f && !isDescending)
             {
                 if (currentElevatorHeight >= requiredHeight)
                 {
                     _isPreAligned = true;
                 }
+            }
+
+            // Failsafe: if we are pushed forward but suddenly the setpoint changes to a lower node, back up!
+            if (_isPreAligned && isDescending)
+            {
+                _isPreAligned = false;
             }
 
             float zOffset = _isPreAligned ? alignScoreDistance : alignHoldDistance;

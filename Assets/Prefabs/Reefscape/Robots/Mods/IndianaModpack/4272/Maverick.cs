@@ -181,8 +181,9 @@ namespace Prefabs.Reefscape.Robots.Mods.IndianaModpack._4272
                 foreach (var roller in intakeRollers)
                     if (roller != null) roller.ChangeAngularVelocity(floorIntakeCurrentSpeed);
 
+            // Algae roller logic blocks operation if robot has coral
             float algaeCurrentSpeed = 0f;
-            if (intakePressed && !hasAlgae) algaeCurrentSpeed = algaeIntakeSpeed;
+            if (intakePressed && !hasAlgae && !hasCoral) algaeCurrentSpeed = algaeIntakeSpeed;
             else if (outtakePressed || (CurrentSetpoint == ReefscapeSetpoints.Place && isScoreBuffering)) algaeCurrentSpeed = -algaeIntakeSpeed; 
 
             if (algaeRollers != null)
@@ -234,8 +235,14 @@ namespace Prefabs.Reefscape.Robots.Mods.IndianaModpack._4272
                     break;
                 case ReefscapeSetpoints.Intake:
                     SetSetpointTargets(intake);
-                    _algaeController.RequestIntake(algaeIntake, intakePressed && CurrentRobotMode == ReefscapeRobotMode.Algae && !hasAlgae && !hasCoral);
-                    _coralController.RequestIntake(coralIntake, intakePressed && !hasCoral && !hasAlgae);
+                    
+                    // --- UPDATED: Substantially widened tolerances ---
+                    // Generous deadband so it triggers even if the arm/elevator bounce or bottom out early
+                    bool isAtIntakePosition = Mathf.Abs(currentElevatorHeight - intake.elevatorHeight) <= (elevatorTolerance * 4f) &&
+                                              Mathf.Abs(Mathf.DeltaAngle(currentEEAngle, intake.endEffectorAngle)) <= 40.0f;
+                    
+                    _algaeController.RequestIntake(algaeIntake, intakePressed && CurrentRobotMode == ReefscapeRobotMode.Algae && !hasAlgae && !hasCoral && isAtIntakePosition);
+                    _coralController.RequestIntake(coralIntake, intakePressed && !hasCoral && !hasAlgae && isAtIntakePosition);
                     break;
                 case ReefscapeSetpoints.L1:
                     SetSetpointTargets(l1);

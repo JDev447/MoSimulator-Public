@@ -24,6 +24,7 @@ namespace Prefabs.Reefscape.Robots.Mods.IndianaModpack._7457
         public Texture L1Mode;        // Drag your Green texture here
         public Texture AutoAligning;  // Drag your Red/Orange texture here
         public Texture AutoAligned;   // Drag your Blue texture here
+        public Texture WhiteMode;     // Drag your White texture here
 
         // Internal References
         private RobotGamePieceControllerBase _gamePieceManager;
@@ -74,16 +75,25 @@ namespace Prefabs.Reefscape.Robots.Mods.IndianaModpack._7457
                 return; // Stop reading here so we stay lit while aiming!
             }
 
-            // --- 2. CHECK L1 MODE ---
-            if (_robotBase.CurrentIntakeMode == ReefscapeIntakeMode.L1)
+            // Verify we are dealing with our specific 7457 script to access the custom Effective variables
+            if (_robotBase is suPURDUEper purdueRobot)
             {
-                // IN L1 MODE: Turn ON (Green texture)
-                ApplyLedState(0f, 0.0f, 20f, L1Mode);
-                return;
+                // --- 2. CHECK EFFECTIVE ALGAE MODE ---
+                if (purdueRobot.EffectiveAlgaeMode)
+                {
+                    ApplyLedState(0f, 0.0f, 20f, WhiteMode);
+                    return;
+                }
+
+                // --- 3. CHECK EFFECTIVE L1 MODE ---
+                if (purdueRobot.EffectiveL1Mode)
+                {
+                    ApplyLedState(0f, 0.0f, 20f, L1Mode);
+                    return;
+                }
             }
 
-            // --- 3. IDLE / STANDARD DRIVING ---
-            // If we aren't auto-aiming and aren't in L1 mode, turn the lights completely OFF!
+            // --- 4. IDLE / STANDARD DRIVING ---
             TurnLedsOff();
         }
 
@@ -97,6 +107,9 @@ namespace Prefabs.Reefscape.Robots.Mods.IndianaModpack._7457
 
         private void TurnLedsOff()
         {
+            // Set texture to white before dimming so dark colors don't bleed through
+            if (WhiteMode != null) _ledMaterial.SetTexture("_Texture2D", WhiteMode);
+            
             // Setting intensity to 0 kills the emission glow completely, turning the lights off
             _ledMaterial.SetFloat("_intensity", 0f);
         }
